@@ -30,8 +30,9 @@ open class AutonomousMaxBuilder(private val alliance: Alliance) : CommandOpMode(
         )
 
         val autonomousCommand = SequentialCommandGroup(
-            drive.ramsetteCommand(paths.forward),
-            drive.turnToAngle(paths.turn)
+            *paths.segments.flatMap {
+                listOf(drive.turnToAngle(it.heading), drive.ramsetteCommand(it.trajectory))
+            }.toTypedArray()
         )
 
         waitForStart()
