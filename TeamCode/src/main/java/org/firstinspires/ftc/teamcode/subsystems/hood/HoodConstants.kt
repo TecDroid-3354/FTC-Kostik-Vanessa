@@ -1,26 +1,44 @@
 package org.firstinspires.ftc.teamcode.subsystems.hood
 
 import com.qualcomm.robotcore.hardware.PIDFCoefficients
-import org.firstinspires.ftc.robotcore.external.navigation.Position
+import com.seattlesolvers.solverslib.hardware.motors.Motor
+import org.firstinspires.ftc.teamcode.utils.Angle
+import org.firstinspires.ftc.teamcode.utils.configurations.OpMotorExConfiguration
+import org.firstinspires.ftc.teamcode.utils.configurations.genericConfigurations.GenericMotorConfiguration
 import org.firstinspires.ftc.teamcode.utils.configurations.motorControlModeConfiguration.MotorPositionModeConfiguration
-import org.firstinspires.ftc.teamcode.utils.configurations.motorControlModeConfiguration.MotorVelocityModeConfiguration
 
 object HoodConstants {
-   object Identfication {
-       var hoodMotorID = "hoodMotor"
-   }
+
+    object Identification {
+        const val HOOD_MOTOR_ID = "hoodMotor"
+    }
+
+    object PhysicalCharacteristics {
+        const val GEAR_RATIO = 1.0
+        const val COUNTS_PER_REV = 28.0
+    }
+
     object Configuration {
-        val PIDF = (PIDFCoefficients(1.0,0.0,0.3,0.2))
-        val PositionTolerance = (2.0)
+        const val inverted = false
+        val zeroPowerBehavior = Motor.ZeroPowerBehavior.BRAKE
 
-        val PositionLimits = ClosedRange<Double>(3.0 , 100.0)
+        val PIDF = PIDFCoefficients(1.0, 0.0, 0.3, 0.2)
+        val POSITION_TOLERANCE = Angle.fromDegrees(2.0)
+        val POSITION_LIMITS = Angle.fromDegrees(3.0)..Angle.fromDegrees(100.0)
 
-        private var genericConf {
+        private val genericConfiguration = GenericMotorConfiguration()
+            .withInverted(inverted)
+            .withZeroPowerBehavior(zeroPowerBehavior)
+            .withGearRatio(PhysicalCharacteristics.GEAR_RATIO)
+            .withTicksPerRev(PhysicalCharacteristics.COUNTS_PER_REV)
 
-        }
-        private var controlModeConfiguration = MotorPositionModeConfiguration()
-            .withPositionLimits(PositionLimits)
+        private val controlModeConfiguration = MotorPositionModeConfiguration()
             .withPIDFCoefficients(PIDF)
-            .withPositionTolerance(PositionTolerance)
+            .withPositionTolerance(POSITION_TOLERANCE.rotations)
+            .withPositionLimits(POSITION_LIMITS)
+
+        val motorConfig = OpMotorExConfiguration()
+            .withGenericMotorConfiguration(genericConfiguration)
+            .withControlModeConfiguration(controlModeConfiguration)
     }
 }
