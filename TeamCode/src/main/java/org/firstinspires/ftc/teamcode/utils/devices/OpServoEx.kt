@@ -82,7 +82,7 @@ class OpServoEx(private val hardwareMap: HardwareMap, private val servoId: Strin
     }
 
     // TODO() Add comment
-    fun setServoPosition(angle: Angle) {
+    fun setServoPosition(angle: ClosedRange<Angle>) {
         if (controlMode != ServoControlMode.POSITION) {
             throw wrongControlModeCommandException
         }

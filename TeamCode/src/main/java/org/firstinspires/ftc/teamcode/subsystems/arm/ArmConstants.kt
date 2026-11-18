@@ -26,8 +26,8 @@ object ArmConstants {
             .withAbsoluteId( AbsoluteId)
     }
 
-
-
-
-
+    object Positions{
+        val closed = Angle.fromDegrees(0.0)
+        val deployed = Angle.fromDegrees(90.0)
+    }
 }
