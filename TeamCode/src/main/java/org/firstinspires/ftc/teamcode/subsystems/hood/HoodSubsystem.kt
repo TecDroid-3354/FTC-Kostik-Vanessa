@@ -1,31 +1,33 @@
-package org.firstinspires.ftc.teamcode.subsystems.hood
+package org.firstinspires.ftc.teamcode.subsystems.Hood
 
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.seattlesolvers.solverslib.command.Command
 import com.seattlesolvers.solverslib.command.InstantCommand
-import com.seattlesolvers.solverslib.command.SubsystemBase
-import com.seattlesolvers.solverslib.command.WaitUntilCommand
 import org.firstinspires.ftc.teamcode.utils.Angle
-import org.firstinspires.ftc.teamcode.utils.devices.OpMotorEx
+import org.firstinspires.ftc.teamcode.utils.devices.OpServoEx
 
-class HoodSubsystem(hardwareMap: HardwareMap): SubsystemBase() {
+class Hood(hardwareMap: HardwareMap) {
 
-    private val motor = OpMotorEx(hardwareMap, HoodConstants.Identification.HOOD_MOTOR_ID)
+    private val servo: OpServoEx = OpServoEx(
+        hardwareMap,
+        HoodConstant.Identification.hoodId
+    )
 
     init {
-        motor.applyConfigurationAndResetEncoder(HoodConstants.Configuration.motorConfig)
+        servo.applyConfiguration(
+            HoodConstant.Conf.runToPositionConf
+        )
     }
 
-    fun setAngle(angle: Angle) {
-        motor.setAngle(angle)
+    fun setAngle(targetAngle: Angle) {
+        servo.runToPosition(targetAngle)
     }
 
-    fun getAngle(): Angle = motor.getPosition().get()
-
-    fun isAtTarget(): Boolean = motor.isAtPositionTarget().asBoolean
-
-    fun setAngleCMD(angle: Angle): Command {
-        return InstantCommand({ setAngle(angle) }, this)
-            .andThen(WaitUntilCommand(motor.isAtPositionTarget()))
+    fun setAngleCMD(targetAngle: Angle): Command {
+        return object : InstantCommand() {
+            override fun initialize() {
+                setAngle(targetAngle)
+            }
+        }
     }
 }
