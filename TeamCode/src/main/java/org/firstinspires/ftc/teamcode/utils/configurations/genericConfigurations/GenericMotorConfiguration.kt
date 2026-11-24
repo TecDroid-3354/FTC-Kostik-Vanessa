@@ -29,7 +29,7 @@ class GenericMotorConfiguration {
         return this
     }
 
-    fun withZeroPowerBehavior(value: Unit)   : GenericMotorConfiguration {
+    fun withZeroPowerBehavior(value: Motor.ZeroPowerBehavior)   : GenericMotorConfiguration {
         this.zeroPowerBehavior = value
         return this
     }
