@@ -15,9 +15,6 @@ import org.firstinspires.ftc.teamcode.utils.TecDroidRobot
 import org.firstinspires.ftc.teamcode.utils.extensions.circle
 import org.firstinspires.ftc.teamcode.utils.extensions.onFalse
 import org.firstinspires.ftc.teamcode.utils.extensions.onTrue
-import org.firstinspires.ftc.teamcode.utils.extensions.a
-import org.firstinspires.ftc.teamcode.utils.extensions.whileTrue
-import com.seattlesolvers.solverslib.command.StartEndCommand
 import com.seattlesolvers.solverslib.geometry.Pose2d
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.teamcode.subsystems.tankDrive.TankDrive
