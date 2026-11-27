@@ -1,12 +1,14 @@
 package org.firstinspires.ftc.teamcode
 
 import com.pedropathing.math.Pose
+import com.qualcomm.hardware.bosch.BNO055IMU
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot
 import com.qualcomm.robotcore.hardware.HardwareMap
+import com.qualcomm.robotcore.hardware.IMU
 import com.seattlesolvers.solverslib.command.Command
 import com.seattlesolvers.solverslib.command.InstantCommand
 import com.seattlesolvers.solverslib.gamepad.GamepadEx
 import org.firstinspires.ftc.robotcore.external.Telemetry
-import org.firstinspires.ftc.teamcode.subsystems.pruebaIndexV.IndexV
 import org.firstinspires.ftc.teamcode.subsystems.exampleSubsystem.ExampleSubsystem
 import org.firstinspires.ftc.teamcode.utils.Alliance
 import org.firstinspires.ftc.teamcode.utils.TecDroidRobot
@@ -16,18 +18,26 @@ import org.firstinspires.ftc.teamcode.utils.extensions.onTrue
 import org.firstinspires.ftc.teamcode.utils.extensions.a
 import org.firstinspires.ftc.teamcode.utils.extensions.whileTrue
 import com.seattlesolvers.solverslib.command.StartEndCommand
-import org.firstinspires.ftc.teamcode.utils.extensions.b
+import com.seattlesolvers.solverslib.geometry.Pose2d
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
+import org.firstinspires.ftc.teamcode.subsystems.tankDrive.TankDrive
+import org.firstinspires.ftc.teamcode.utils.Angle
+
+
 
 class Robot(
     private val alliance: Alliance,
     private val hardwareMap: HardwareMap,
     private val controller: GamepadEx,
+    private val startingPose : Pose2d,
     telemetry: Telemetry
 ): TecDroidRobot(telemetry, hardwareMap) {
 
-    val indexer = IndexV(hardwareMap = hardwareMap)
 
     private lateinit var exampleSubsystem: ExampleSubsystem
+    lateinit var imu: IMU
+    lateinit var chassis: TankDrive
+
 
     init {
         subsystemInitialization()
@@ -36,6 +46,19 @@ class Robot(
     /* Initialize your subsystems and follower here */
     override fun subsystemInitialization() {
         exampleSubsystem = ExampleSubsystem(hardwareMap)
+        imu = hardwareMap.get(IMU::class.java, "imu")
+        val revHubOrientationOnRobot = RevHubOrientationOnRobot(
+            RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
+            RevHubOrientationOnRobot.UsbFacingDirection.UP
+        )
+        imu.initialize(IMU.Parameters(revHubOrientationOnRobot))
+        imu.resetYaw()
+        chassis = TankDrive(hardwareMap, {getAngle()}, startingPose)
+
+    }
+    fun getAngle(): Angle {
+        return Angle.fromDegrees(AngleUnit.normalizeDegrees(imu.robotYawPitchRollAngles.getYaw(
+            AngleUnit.DEGREES)))
     }
 
     /* Runs indefinitely after the init button on the DS is pressed. Stops when play button is pressed */
@@ -48,18 +71,6 @@ class Robot(
         // Build Commands:
         // controller.button().onTrue(Command)
 
-        controller.a().whileTrue(
-            StartEndCommand(
-                { indexer.index() },
-                {indexer.stop()}, indexer
-            )
-        )
-        controller.b().whileTrue(
-            StartEndCommand(
-                { indexer.reverse() },
-                { indexer.stop() }, indexer
-            )
-        )
 
         controller.circle()
             .onTrue(InstantCommand({ exampleSubsystem.enableMotor() }))
